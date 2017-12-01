@@ -83,7 +83,6 @@ sequences = tokenizer.texts_to_sequences(texts)
 
 word_index = tokenizer.word_index
 print('Found %s unique tokens.' % len(word_index))
-
 data = pad_sequences(sequences, maxlen=MAX_SEQUENCE_LENGTH)
 
 labels = to_categorical(np.asarray(labels))
@@ -146,5 +145,6 @@ model.compile(loss='categorical_crossentropy',
 
 model.fit(x_train, y_train,
           batch_size=128,
-          epochs=50,
+          epochs=10,
           validation_data=(x_val, y_val))
+model.save('20news_model.h5')
