@@ -14,6 +14,7 @@ http://www.cs.cmu.edu/afs/cs.cmu.edu/project/theo-20/www/data/news20.html
 from __future__ import print_function
 
 import os
+import pickle
 import sys
 import numpy as np
 from keras.preprocessing.text import Tokenizer
@@ -145,6 +146,13 @@ model.compile(loss='categorical_crossentropy',
 
 model.fit(x_train, y_train,
           batch_size=128,
-          epochs=10,
+          epochs=20,
           validation_data=(x_val, y_val))
+# Save Model
 model.save('20news_model.h5')
+# Save Tokenizer
+with open('tokenizer.pickle', 'wb') as handle:
+    pickle.dump(tokenizer, handle, protocol=pickle.HIGHEST_PROTOCOL)
+    
+    
+
