@@ -20,3 +20,11 @@ def most_similar(word):
 	if word in word_vectors.vocab:
 		result = word_vectors.most_similar(positive=[word], topn=1)
 		return result[0][0]
+
+
+def most_similar_to_given(word, word_list):
+	if word in word_vectors.vocab:
+		for x in word_list: 
+			if x not in word_vectors.vocab:
+		 		word_list.remove(x)
+		return word_vectors.most_similar_to_given(word, word_list)
