@@ -3,12 +3,20 @@
     All rights reserved.
 """
 import sys
+import os
+import numpy as np
 import pickle
 
 MAX_SEQUENCE_LENGTH = 1000
 
 from keras.preprocessing.text import Tokenizer
 from keras.preprocessing.sequence import pad_sequences
+
+def pick_random_file(text_dir):
+    random_class=np.random.choice(os.listdir(text_dir))
+    class_files=[x for x in os.listdir(os.path.join(text_dir, random_class))]
+    rand_file=np.random.choice(class_files)
+    return text_dir+'/'+random_class+'/'+rand_file, random_class
 
 def load_textfile(filepath):
     """ Returns the text file words after skipping the header. """
@@ -37,7 +45,8 @@ def process_text(tokenizer, text):
 
 def reconstruct_text(inverse_tokenizer, x):
     """ Returns the reconstructed text """
-    x_words = [inverse_tokenizer[w] for w in x]
+    
+    x_words = [inverse_tokenizer[w] for w in x if w != 0]
     return ' '.join(x_words)
 
 def render_attack(x_orig, x_adv):
