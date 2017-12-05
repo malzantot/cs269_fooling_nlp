@@ -28,3 +28,6 @@ def most_similar_to_given(word, word_list):
 			if x not in word_vectors.vocab:
 		 		word_list.remove(x)
 		return word_vectors.most_similar_to_given(word, word_list)
+
+def del_words(word_list):
+    return [x for x in word_list if x in word_vectors.vocab]
