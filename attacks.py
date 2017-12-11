@@ -10,7 +10,7 @@ class RandomAttack(object):
         self.num_words = num_words
         self.max_iters = 10000
 
-    def attack(self, x):
+    def attack(self, x, limit=0.5):
         """ Applies attack on input x .
         Returns:
          a tuple of three items:
@@ -22,15 +22,20 @@ class RandomAttack(object):
         orig_scores = self.model.predict(x_adv)
         orig_predicted = np.argmax(orig_scores)
         pred_history = [orig_scores[0][orig_predicted]]
-        for iter_idx in range(self.max_iters):
+        iters_limit = int(limit*np.count_nonzero(x_adv))
+        last_predicted = orig_predicted
+        changed_words = set()
+        while len(changed_words) < (iters_limit):
             word_idx = np.random.choice(len(x_adv[0]))
             # don't perturb paddings
             while x_adv[0][word_idx] == 0:
                 word_idx = np.random.choice(len(x_adv[0]))
+            changed_words.add(word_idx)
             # select new word
             x_adv[0][word_idx] = np.random.choice(self.num_words)
             adv_scores = self.model.predict(x_adv)
             adv_predicted = np.argmax(adv_scores)
+            # print(adv_scores[0][orig_predicted], ' ', np.max(adv_scores[0]))
             pred_history.append(adv_scores[0][orig_predicted])
             last_predicted = np.argmax(adv_scores[0])
             if orig_predicted != adv_predicted:
@@ -50,7 +55,7 @@ class GreedyAttack(object):
         self.topics_words_probs = topics_words_probs
 
 
-    def attack(self, x, target):
+    def attack(self, x, target, limit=0.5):
         x_adv = x.copy()
         orig_scores = self.model.predict(x_adv)
         orig_predicted = np.argmax(orig_scores)
@@ -60,9 +65,10 @@ class GreedyAttack(object):
         target_words_probs = np.array(self.topics_words_probs[target])
         select_logits = np.exp(target_words_probs / self.temp)
         select_probs = select_logits / np.sum(select_logits)
-        for iter_idx in range(self.max_iters):
+        iters_limit = int(limit * np.count_nonzero(x_adv))
+        for iter_idx in range(iters_limit):
             # pick word at random
-            word_idx = np.random.choice(len(x_adv[0]))
+            word_idx = iter_idx #np.random.choice(len(x_adv[0]))
             # don't perturb paddings
             while x_adv[0][word_idx] == 0:
                 word_idx = np.random.choice(len(x_adv[0]))
